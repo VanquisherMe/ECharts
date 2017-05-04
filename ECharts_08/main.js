@@ -1,36 +1,77 @@
 var chart_08_mapData = [
-    {'code': 'CN', 'name': '中国', 'value': 55, 'color': '#F96352'},
-    {'code': 'CNNH', 'name': '南海', 'value': 20, 'color': '#04AEFF'},
-    {'code': 'FI', 'name': '欧洲', 'value': 30, 'color': '#F7CC31'},
-    {'code': 'RU', 'name': '俄罗斯', 'value': 40, 'color': '#F7CC31'},
-    {'code': 'KZ', 'name': '中亚', 'value': 30, 'color': '#F7CC31'},
-    {'code': 'IL', 'name': '地中海', 'value': 35, 'color': '#F7CC31'},
-    {'code': 'IR', 'name': '波斯湾', 'value': 25, 'color': '#F7CC31'},
-    {'code': 'OM', 'name': '西亚', 'value': 30, 'color': '#F7CC31'},
-    {'code': 'IN', 'name': '南亚', 'value': 25, 'color': '#F7CC31'},
-    {'code': 'TH', 'name': '东南亚', 'value': 30, 'color': '#F7CC31'},
-    {'code': 'IOR', 'name': '印度洋', 'value': 35, 'color': '#04AEFF'},
-    {'code': 'PACIFIC', 'name': '南太\n平洋', 'value': 40, 'color': '#04AEFF'}
+    {'code': 'FI', 'name': '欧洲', 'value': 35, fontSize: 12, 'color': '#F7CC31'},
+    {'code': 'RU', 'name': '俄罗斯', 'value': 45, fontSize: 13, 'color': '#F7CC31'},
+    {'code': 'IL', 'name': '地中海', 'value': 45, fontSize: 13, 'color': '#F7CC31'},
+    {'code': 'KZ', 'name': '中亚', 'value': 45, fontSize: 13, 'color': '#F7CC31'},
+    {'code': 'IR', 'name': '波斯湾', 'value': 35, fontSize: 12, 'color': '#F7CC31'},
+    {'code': 'OM', 'name': '西亚', 'value': 30, fontSize: 12, 'color': '#F7CC31'},
+    {'code': 'IN', 'name': '南亚', 'value': 25, fontSize: 12, 'color': '#F7CC31'},
+    {'code': 'CN', 'name': '中国', 'value': 55, fontSize: 16, 'color': '#F96352'},
+    {'code': 'CNNH', 'name': '南海', 'value': 20, fontSize: 12, 'color': '#04AEFF'},
+    {'code': 'TH', 'name': '东南亚', 'value': 45, fontSize: 13, 'color': '#F7CC31'},
+    {'code': 'IOR', 'name': '印度洋', 'value': 40, fontSize: 12, 'color': '#04AEFF'},
+    {'code': 'PACIFIC', 'name': '南太\n平洋', 'value': 45, fontSize: 13, 'color': '#04AEFF'}
 ];
 
+var chart_08_lines_data = [
+    [{name: 'FI'}, {name: 'IL'}],
+    [{name: 'FI'}, {name: 'RU'}],
+    [{name: 'IL'}, {name: 'IR'}],
+    [{name: 'KZ'}, {name: 'RU'}],
+    [{name: 'KZ'}, {name: 'OM'}],
+    [{name: 'CN'}, {name: 'KZ'}],
+    [{name: 'CN'}, {name: 'TH'}],
+    [{name: 'TH'}, {name: 'IN'}],
+    [{name: 'IN'}, {name: 'IOR'}],
+    [{name: 'IR'}, {name: 'OM'}]
+]
 
+var chart_08_convertData = function (data) {
+    var res = [];
+    for (var i = 0; i < data.length; i++) {
+        var dataItem = data[i];
+        var fromCoord = [
+            latlong[dataItem[0].name].longitude,
+            latlong[dataItem[0].name].latitude
+        ]
+        var toCoord = [
+            latlong[dataItem[1].name].longitude,
+            latlong[dataItem[1].name].latitude
+        ];
+        if (fromCoord && toCoord) {
+            res.push({
+                coords: [fromCoord, toCoord]
+            });
+        }
+    }
+    return res;
+};
 
-
-var chart_08_getLatlong=function (mapData) {
-   return mapData.map(function (itemOpt) {
+var chart_08_getLatlong = function (mapData) {
+    return mapData.map(function (itemOpt) {
         return {
             name: itemOpt.name,
-            symbolSize:itemOpt.value,
+            symbolSize: itemOpt.value,
             value: [
                 latlong[itemOpt.code].longitude,
                 latlong[itemOpt.code].latitude,
                 itemOpt.value
             ],
+            label: {
+                normal: {
+                    offset:[0,-1],
+                    textStyle: {
+
+                        fontWeight:100,
+                        fontSize:itemOpt.fontSize
+                    }
+                }
+            },
             itemStyle: {
                 normal: {
-                    color:itemOpt.color,
-                    borderColor:"#fff",
-                    borderWidth:2,
+                    color: itemOpt.color,
+                    borderColor: "#fff",
+                    borderWidth: 2,
                     opacity: 1
                 }
             }
@@ -43,22 +84,20 @@ $.get("./world.json", function (worldjson) {
     var chart_08 = echarts.init(document.querySelector("#ECharts_08"));
     echarts.registerMap('world', worldjson);
     chart_08.setOption({
-        backgroundColor:"#F5F5F5",
+        backgroundColor: "#F5F5F5",
         geo: {
-            show:true,
+            show: true,
             type: 'map',
             map: 'world',
-           /* label: {
+            left:"8%",
+            label: {
                 emphasis: {
                     show: false
                 }
-            },*/
-            roam: true,
-            aspectScale: 0.85,
-            scaleLimit: {
-                min: 0.5,
-                max: 2
             },
+            aspectScale: 0.85,
+            zoom: 1.2,
+
             itemStyle: {
                 normal: {
                     areaColor: '#CDCDCD',
@@ -69,31 +108,15 @@ $.get("./world.json", function (worldjson) {
                 }
             }
         },
-        series: [ {
-            name:"关系图",
-            type: 'lines',
-            zlevel: 2,
-            symbol: ['none', 'arrow'],
-            symbolSize: 10,
-            effect: {
-                show: true,
-                period: 6,
-                trailLength: 0
-            },
-            lineStyle: {
-                normal: {
-                    color:"#ff0028",
-                    width: 1,
-                    opacity: 1
-                }
-            },
-            data: [{
-                coords: [[85.5, 18.5],[45.5, 1.5]]
-            }]
-        },{
+        series: [{
             type: 'scatter',
             coordinateSystem: 'geo',
-            symbol:"circle",
+            symbol: "circle",
+            z: 3,
+            animationDelay: function (idx) {
+                console.log(idx)
+                return idx * 100;
+            },
             label: {
                 normal: {
                     show: true,
@@ -102,22 +125,32 @@ $.get("./world.json", function (worldjson) {
             },
             itemStyle: {
                 normal: {
-                    opacity:1
+                    opacity: 1
                 }
             },
-            data:chart_08_getLatlong(chart_08_mapData)
-            /*data:[{
-                name: "中国",
-                value: [105, 35],
-                symbolSize:40,
-                itemStyle:{
-                    normal:{
-                        color:"#ff0028",
-                        borderColor:"#fffff",
-                        borderWidth:5
-                    }
+            data: chart_08_getLatlong(chart_08_mapData)
+        }, {
+            name: "关系图",
+            type: 'lines',
+            z: 2,
+            symbol: ['none', 'arrow'],
+            symbolSize: 10,
+            animationDelay: function (idx) {
+                console.log(idx)
+                return idx * 100;
+            },
+            markPoint:{
+                symbol:"pin"
+            },
+            lineStyle: {
+                normal: {
+                    color: "#F7CC31",
+                    width: 2,
+                    opacity: 1,
+                    type: 'dotted'
                 }
-            }]*/
+            },
+            data: chart_08_convertData(chart_08_lines_data)
         }]
     });
 });

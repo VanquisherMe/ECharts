@@ -3,14 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>ECharts_08</title>
+    <style>
+        .ECharts_08{
+            position: relative;
+            width: 1200px; height: 453px;
+            overflow: hidden;
+        }
+        .ECharts_08  .img_01{
+            position: absolute;
+            left:15px;
+            bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.56);
+        }
+        .ECharts_08  .img_02{
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+        }
+    </style>
 </head>
 <body>
-    <div id="ECharts_08" style="width: 1200px; height: 453px;">
-
+    <div class="ECharts_08">
+        <div id="ECharts_08" style="width: 1200px; height: 453px;"></div>
+        <img class="img_01" src="chart_08_img_01.png">
+        <img class="img_02" src="chart_08_img_02.png">
     </div>
+
 <script src="../jquery.min.js"></script>
 <script src="../echarts.js"></script>
-<script src="../map.js"></script>
+<script src="../latlong.js"></script>
 <script src="main.js"></script>
 </body>
 </html>
